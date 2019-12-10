@@ -1,0 +1,14 @@
+
+State Machine - |blockGame|collision:WL|S
+Name S.RUN S.LOSE S.WIN 
+S.RUN 0 0 0 
+S.WIN 1 0 1 
+S.LOSE 1 1 0 
+
+State Machine - |blockGame|player_movement:move|S
+Name S.UP S.RIGHT S.LEFT S.DOWN S.STAY 
+S.STAY 0 0 0 0 0 
+S.DOWN 0 0 0 1 1 
+S.LEFT 0 0 1 0 1 
+S.RIGHT 0 1 0 0 1 
+S.UP 1 0 0 0 1 

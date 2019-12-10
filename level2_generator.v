@@ -1,0 +1,187 @@
+module level2_generator(clk, update, rst, xCount, yCount, blocks);	//this module generates the second level's blocks
+input clk,rst,update;
+
+input [9:0]xCount;
+input [9:0]yCount;
+wire [9:0] xCount;
+wire [9:0] yCount;
+
+
+output [15:0]blocks; 
+//stationary
+assign blocks[0] = blockS;
+//horizontal
+assign blocks[1] = blockH1;
+assign blocks[2] = blockH2;
+assign blocks[3] = blockH3;
+assign blocks[4] = blockH4;
+assign blocks[5] = blockH5;
+assign blocks[6] = blockH6;
+//veritcal
+assign blocks[7] = blockV1;
+assign blocks[8] = blockV2;
+assign blocks[9] = blockV3;
+assign blocks[10] = blockV4;
+assign blocks[11] = blockV5;
+
+//stationary
+reg blockS;
+//horizontal
+reg blockH1;
+reg blockH2;
+reg blockH3;
+reg blockH4;
+reg blockH5;
+reg blockH6;
+//vertical
+reg blockV1;
+reg blockV2;
+reg blockV3;
+reg blockV4;
+reg blockV5;
+
+//stationary
+reg [9:0] blockSX [0:31];
+reg [8:0] blockSY [0:31];
+//horizontal
+reg [9:0] blockH1X [0:31];
+reg [8:0] blockH1Y [0:31];
+reg [9:0] blockH2X [0:31];
+reg [8:0] blockH2Y [0:31];
+reg [9:0] blockH3X [0:31];
+reg [8:0] blockH3Y [0:31];
+reg [9:0] blockH4X [0:31];
+reg [8:0] blockH4Y [0:31];
+reg [9:0] blockH5X [0:31];
+reg [8:0] blockH5Y [0:31];
+reg [9:0] blockH6X [0:31];
+reg [8:0] blockH6Y [0:31];
+//vertical
+reg [9:0] blockV1X [0:31];
+reg [8:0] blockV1Y [0:31];
+reg [9:0] blockV2X [0:31];
+reg [8:0] blockV2Y [0:31];
+reg [9:0] blockV3X [0:31];
+reg [8:0] blockV3Y [0:31];
+reg [9:0] blockV4X [0:31];
+reg [8:0] blockV4Y [0:31];
+reg [9:0] blockV5X [0:31];
+reg [8:0] blockV5Y [0:31];
+
+
+
+//controls block sizes
+always@(posedge clk) 
+	begin	
+		//Stationary
+		blockS <= (xCount > blockSX[0] && xCount < (blockSX[0]+10'd412)) && (yCount > blockSY[0] && yCount < (blockSY[0]+10'd281));
+		//Horizontal
+		blockH1 <= (xCount > blockH1X[0] && xCount < (blockH1X[0] + 10'd15)) && (yCount > blockH1Y[0] && yCount < (blockH1Y[0] + 10'd15));
+		blockH2 <= (xCount > blockH2X[0] && xCount < (blockH2X[0] + 10'd15)) && (yCount > blockH2Y[0] && yCount < (blockH2Y[0] + 10'd15));
+		blockH3 <= (xCount > blockH3X[0] && xCount < (blockH3X[0] + 10'd15)) && (yCount > blockH3Y[0] && yCount < (blockH3Y[0] + 10'd15));
+		blockH4 <= (xCount > blockH4X[0] && xCount < (blockH4X[0] + 10'd15)) && (yCount > blockH4Y[0] && yCount < (blockH4Y[0] + 10'd15));
+		blockH5 <= (xCount > blockH5X[0] && xCount < (blockH5X[0] + 10'd25)) && (yCount > blockH5Y[0] && yCount < (blockH5Y[0] + 10'd25));
+		blockH6 <= (xCount > blockH6X[0] && xCount < (blockH6X[0] + 10'd25)) && (yCount > blockH6Y[0] && yCount < (blockH6Y[0] + 10'd25));
+		//Vertical
+		blockV1 <= (xCount > blockV1X[0] && xCount < (blockV1X[0] + 10'd10)) && (yCount > blockV1Y[0] && yCount < (blockV1Y[0] + 10'd10));
+		blockV2 <= (xCount > blockV2X[0] && xCount < (blockV2X[0] + 10'd10)) && (yCount > blockV2Y[0] && yCount < (blockV2Y[0] + 10'd10)); 
+		blockV3 <= (xCount > blockV3X[0] && xCount < (blockV3X[0] + 10'd20)) && (yCount > blockV3Y[0] && yCount < (blockV3Y[0] + 10'd20));
+		blockV4 <= (xCount > blockV4X[0] && xCount < (blockV4X[0] + 10'd20)) && (yCount > blockV4Y[0] && yCount < (blockV4Y[0] + 10'd20));
+		blockV5 <= (xCount > blockV5X[0] && xCount < (blockV5X[0] + 10'd10)) && (yCount > blockV5Y[0] && yCount < (blockV5Y[0] + 10'd10));
+	end
+
+// Stationary block control
+always @ (posedge update)
+	begin
+		if (rst == 1'b1) // position
+			begin
+				blockSX[0] <= 10'd165;
+				blockSY[0] <= 9'd125;
+			end
+	end
+
+//Horizontal block control
+always @(posedge update)
+	begin
+		if (rst == 1'b1)
+			begin //starting positions			
+				blockH1X[0] <= 10'd165;
+				blockH1Y[0] <= 9'd350;
+				blockH2X[0] <= 10'd165;
+				blockH2Y[0] <= 9'd315;
+				blockH3X[0] <= 10'd165;
+				blockH3Y[0] <= 9'd280;
+				blockH4X[0] <= 10'd165;
+				blockH4Y[0] <= 9'd245;
+				blockH5X[0] <= 10'd165;
+				blockH5Y[0] <= 9'd75;
+				blockH6X[0] <= 10'd455;
+				blockH6Y[0] <= 9'd100;
+		
+			end
+		//respawn blocks
+		else if (blockH1X[0] <= 10'd75)
+			blockH1X[0] <= 10'd165;
+		else if (blockH2X[0] <= 10'd75)
+			blockH2X[0] <= 10'd165;
+		else if (blockH3X[0] <= 10'd75)
+			blockH3X[0] <= 10'd165;
+		else if (blockH4X[0] <= 10'd75)
+			blockH4X[0] <= 10'd165;
+		else if (blockH5X[0] >= 10'd435)
+			blockH5X[0] <= 10'd165;
+		else if (blockH6X[0] <= 10'd165)
+			blockH6X[0] <= 10'd455;
+		else
+			begin //speed and direction
+				blockH1X[0] <= blockH1X[0] - 10'd1;
+				blockH2X[0] <= blockH2X[0] - 10'd2;
+				blockH3X[0] <= blockH3X[0] - 10'd2;
+				blockH4X[0] <= blockH4X[0] - 10'd2;
+				blockH5X[0] <= blockH5X[0] + 10'd5;
+				blockH6X[0] <= blockH6X[0] - 10'd4;
+
+			end
+	end
+
+
+// Veritcal block control
+always @(posedge update)
+	begin
+		if (rst == 1'b1) //starting positions
+			begin
+				blockV1X[0] <= 10'd515;
+				blockV1Y[0] <= 9'd125;
+				blockV2X[0] <= 10'd490;
+				blockV2Y[0] <= 9'd125;
+				blockV3X[0] <= 10'd75;
+				blockV3Y[0] <= 9'd340;
+				blockV4X[0] <= 10'd105;
+				blockV4Y[0] <= 9'd340;
+				blockV5X[0] <= 10'd540;
+				blockV5Y[0] <= 9'd125;
+			end
+			
+		//respawn blocks
+		else if (blockV1Y[0] <= 10'd75)
+			blockV1Y[0] <= 10'd125;
+		else if (blockV2Y[0] <= 10'd75)
+			blockV2Y[0] <= 10'd125;
+		else if (blockV3Y[0] <= 10'd125)
+			blockV3Y[0] <= 10'd340;
+		else if (blockV4Y[0] <= 10'd125)
+			blockV4Y[0] <= 10'd340;
+		else if (blockV5Y[0] <= 10'd75)
+			blockV5Y[0] <= 10'd125;	
+		else //speed and direction
+			begin
+				blockV1Y[0] <= blockV1Y[0] - 10'd3;
+				blockV2Y[0] <= blockV2Y[0] - 10'd3;	
+				blockV3Y[0] <= blockV3Y[0] - 10'd9;
+				blockV4Y[0] <= blockV4Y[0] - 10'd9;
+				blockV5Y[0] <= blockV5Y[0] - 10'd3;
+			end
+		end
+
+
+endmodule 

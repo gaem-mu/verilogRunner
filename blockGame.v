@@ -1,0 +1,138 @@
+module blockGame(board_clk, rst, VGA_R, VGA_G, VGA_B, hsync, vsync, clk, blank_n, up, down, left, right, levelselect1, levelselect2);
+
+input board_clk, rst; 
+input up,down, left, right;  //direction inputs (buttons) 
+input levelselect1, levelselect2; //level switch
+output hsync, vsync, clk, blank_n; //non-color outputs to VGA (including the vga clock "clk", which is the main clock used in this project)
+
+///clocks
+clock_converter clocks(board_clk, update, clk); //converts the board clock to VGA clock and frame update clock
+wire clk; 
+wire update; 
+
+//player generator
+player_movement move(clk, rst, up, down, left, right, update, xCount, yCount, player);
+wire player;
+
+//block generators
+level0_generator lv0(clk, update, rst, xCount, yCount, blocks1);
+level1_generator lv1(clk, update, rst, xCount, yCount, blocks2);
+level2_generator lv2(clk, update, rst, xCount, yCount, blocks3);
+wire [15:0]blocks1;
+wire [15:0]blocks2;
+wire [15:0]blocks3;
+
+//level selector
+reg [15:0]blocks;
+
+always @(posedge clk)
+	begin
+		if (levelselect1 == 1'b0 && levelselect2 == 1'b0)
+			blocks <= blocks1;
+		else if (levelselect1 == 1'b1 && levelselect2 == 1'b0)
+			blocks <= blocks2;
+		else
+			blocks <= blocks3;
+	end
+	
+//collision
+collision WL(clk, rst, player, blocks, border, end_zone, xCount, yCount, win, game_over);
+wire game_over;
+wire win;
+
+
+//end_zone
+reg end_zone;
+
+always @(posedge clk)
+	begin
+		end_zone <= ((xCount >= 540) && (xCount <= 565)) && ((yCount >= 75) && (yCount <= 100)) ;
+	end
+
+	
+//border generator
+reg  border;
+
+always @(posedge clk) 
+	begin
+		border <= (((xCount >= 0) && (xCount < 75) || (xCount >= 566) && (xCount < 641)) || ((yCount >= 0) && (yCount < 75) || (yCount >= 406) && (yCount < 481)));
+	end
+
+
+
+//text generator
+wire game_over_text;
+wire win_text;
+wire level_text;
+wire level_num0_text;
+wire level_num1_text;
+wire level_num2_text;
+
+
+text words(clk, rst, xCount, yCount, game_over_text, win_text,level_text, level_num0_text, level_num1_text, level_num2_text);
+
+
+//display control
+wire [9:0] xCount; 
+wire [9:0] yCount;
+wire ScreenArea;
+
+VGA_Controller VGA(clk, xCount, yCount, ScreenArea, hsync, vsync, blank_n);
+
+output reg [7:0]VGA_R, VGA_G, VGA_B;
+
+reg R;
+reg G;
+reg B;
+
+always @(posedge clk)
+	begin
+		if (game_over == 1'b0)
+			begin
+				if (win == 1'b0)
+					begin
+						if (levelselect1 == 1'b0 && levelselect2 == 1'b0)
+							begin
+								R = ((border && !level_text && !level_num0_text) || player || blocks[2]);
+								G = ((border && !level_text && !level_num0_text) || end_zone || blocks[0]);
+								B = (!player &&((border && !level_text && !level_num0_text) || blocks[0] || blocks[1] || blocks[2]));
+							end
+						else if (levelselect1 == 1'b1 && levelselect2 == 1'b0)
+							begin
+								R = (( (border && !level_text && !level_num1_text) || player || blocks[0] || blocks[1] || blocks[2] || blocks[3] || blocks[4]));
+								G = ((border && !level_text && !level_num1_text) || end_zone || blocks[10] || blocks[11] || blocks[12] || blocks[13] || blocks[14] || blocks[15]);
+								B = (!player &&((border && !level_text && !level_num1_text) || blocks[0] || blocks[1]|| blocks[2] || blocks[3] || blocks[4] || blocks[5] || blocks[6] || blocks[7] || blocks[8] || blocks[9] || blocks[10] || blocks[11] || blocks[12] || blocks[13] || blocks[14] || blocks[15]));
+							end
+						else
+							begin
+								R = (( (border && !level_text && !level_num2_text) || player || blocks[0]));
+								G = ((border && !level_text && !level_num2_text) || end_zone || blocks[7] || blocks[8] || blocks[9] || blocks[10] || blocks[11]);
+								B = (!player &&((border && !level_text && !level_num2_text) || blocks[0] || blocks[1]|| blocks[2] || blocks[3] || blocks[4] || blocks[5] || blocks[6] || blocks[7] || blocks[8] || blocks[9] || blocks[10] || blocks[11]));					
+							end
+					end
+				else
+					begin
+						R = 1'b0;
+						G = ScreenArea & !win_text;
+						B = 1'b0;
+					end
+			end
+		else
+			begin
+				R = ScreenArea & !game_over_text;
+				G = 1'b0;
+				B = 1'b0;
+			end
+	end
+
+
+
+always @ (posedge clk)
+	begin
+		VGA_R = {8{R}};
+		VGA_G = {8{G}};
+		VGA_B = {8{B}};
+	end 
+
+
+endmodule 

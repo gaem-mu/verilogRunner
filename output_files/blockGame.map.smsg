@@ -1,0 +1,8 @@
+Warning (10268): Verilog HDL information at level0_generator.v(63): always construct contains both blocking and non-blocking assignments File: M:/ECE-287/Final/level0_generator.v Line: 63
+Info (10281): Verilog HDL Declaration information at level0_generator.v(10): object "blocks" differs only in case from object "blockS" in the same scope File: M:/ECE-287/Final/level0_generator.v Line: 10
+Info (10281): Verilog HDL Declaration information at level2_generator.v(10): object "blocks" differs only in case from object "blockS" in the same scope File: M:/ECE-287/Final/level2_generator.v Line: 10
+Info (10281): Verilog HDL Declaration information at collision.v(7): object "win" differs only in case from object "WIN" in the same scope File: M:/ECE-287/Final/collision.v Line: 7
+Info (10281): Verilog HDL Declaration information at player_movement.v(2): object "up" differs only in case from object "UP" in the same scope File: M:/ECE-287/Final/player_movement.v Line: 2
+Info (10281): Verilog HDL Declaration information at player_movement.v(2): object "down" differs only in case from object "DOWN" in the same scope File: M:/ECE-287/Final/player_movement.v Line: 2
+Info (10281): Verilog HDL Declaration information at player_movement.v(2): object "left" differs only in case from object "LEFT" in the same scope File: M:/ECE-287/Final/player_movement.v Line: 2
+Info (10281): Verilog HDL Declaration information at player_movement.v(2): object "right" differs only in case from object "RIGHT" in the same scope File: M:/ECE-287/Final/player_movement.v Line: 2
